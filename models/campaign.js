@@ -8,7 +8,8 @@ const campaignSchema = new Schema({
   influencer_id: [{ type: Schema.Types.ObjectId, ref: 'Influencer' }],
   title: String,
   description: String,
-  expirationDate: Date,
+  startDate: Date,
+  endDate: Date,
   tags: [],
   location: {
     street: String,
