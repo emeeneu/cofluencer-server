@@ -42,4 +42,22 @@ router.post('/users/new/:username', (req, res) => {
   });
 });
 
+router.post('/newcampaign', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const newCampaign = Campaign({
+    title: req.body.title,
+    description: req.body.description,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+  });
+
+  return newCampaign.save().then(() => {
+    res.json(newCampaign);
+  })
+    .catch(next);
+});
+
 module.exports = router;

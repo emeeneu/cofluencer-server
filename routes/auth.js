@@ -42,7 +42,7 @@ router.post('/login', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/brand/signup', (req, res, next) => {
   if (req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
@@ -64,18 +64,40 @@ router.post('/signup', (req, res, next) => {
 
       const newUser = Company({
         username,
-        email: '',
         password: hashPass,
-        address: {
-          street: '',
-          city: '',
-          state: '',
-          zip: '',
-        },
-        bio: '',
-        profileImage: '',
-        socialLinks: [{}],
-        tags: [],
+      });
+
+      return newUser.save().then(() => {
+        req.session.currentUser = newUser;
+        res.json(newUser);
+      });
+    })
+    .catch(next);
+});
+
+router.post('/influencer/signup', (req, res, next) => {
+  if (req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(422).res.json({ error: 'unauthorized' });
+  }
+
+  Influencer.findOne({ username }, 'username')
+    .then((userExists) => {
+      if (userExists) {
+        return res.status(422).json({ error: 'username-not-unique' });
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashPass = bcrypt.hashSync(password, salt);
+
+      const newUser = Influencer({
+        username,
+        password: hashPass,
       });
 
       return newUser.save().then(() => {
