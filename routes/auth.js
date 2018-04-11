@@ -17,7 +17,7 @@ router.get('/me', (req, res, next) => {
   }
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login/company', (req, res, next) => {
   if (req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
@@ -29,6 +29,31 @@ router.post('/login', (req, res, next) => {
   }
 
   Company.findOne({ username })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: 'not-found' });
+      }
+      if (bcrypt.compareSync(password, user.password)) {
+        req.session.currentUser = user;
+        return res.json(user);
+      }
+      return res.status(404).json({ error: 'not-found' });
+    })
+    .catch(next);
+});
+
+router.post('/login/influencer', (req, res, next) => {
+  if (req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(422).json({ error: 'validation' });
+  }
+
+  Influencer.findOne({ username })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ error: 'not-found' });

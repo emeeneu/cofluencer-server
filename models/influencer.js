@@ -6,6 +6,7 @@ const IgMedia = require('./ig-media');
 
 const influencerSchema = new Schema({
   username: String,
+  role: { type: String, default: 'influencer' },
   name: String,
   lastname: String,
   email: String,
