@@ -6,6 +6,26 @@ const Company = require('../models/company');
 const Influencer = require('../models/influencer');
 const Campaign = require('../models/campaign');
 
+
+const TwitterPackage = require('twitter');
+
+const secret = {
+  consumer_key: 'gnUG9NUN21pUMZ8KzZRIuZQXX',
+  consumer_secret: 'Nc0NLEkN9AAOldqX0nLj4SM3MsEW9a8rHbZf8hP8vLk8dSt9sh',
+  access_token_key: '343944710-Loy3p1kJKmTEi8gBgMMYKaUWqDTKrcAV2yC9Rzrl',
+  access_token_secret: 'GBZc5TG3eOiXl8WaXf5kp995xpASqYZHioZNoZuZKSlIF',
+};
+const Twitter = new TwitterPackage(secret);
+
+router.get('/twt/:twtUserName', (req, res) => {
+  console.log('twitter go');
+  const twtUser = req.params.twtUserName;
+  Twitter.get('users/search', { q: twtUser }, (error, user) => {
+    console.log(user);
+    res.status(200).json({ user });
+  });
+});
+
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
 });
@@ -14,11 +34,11 @@ router.get('/private', (req, res) => {
 router.get('/ig/:igUserName', (req, res) => {
   const instaUser = ((igUserName, cb) => {
     FB.api(
-      '/17841407080190618',
+      '/1805333172833119',
       {
         fields: `business_discovery.username( ${igUserName} ){username,biography,website,followers_count,media_count,media{caption, comments_count,like_count, media_url, media_type}}`,
         // incluir token en variable actual caduca 13 de abril de 2018.
-        access_token: 'EAAZAp8OJ3y18BALAz9elkrQvaStADT7ZCm2W64dREkBabOqOFpS9nlg7dwsTSs0a83ooVhWaeIxHklaZB2gTOyY93s7WZCAkfuxQAveZAHD3qXrkfTfcZA9bEYXL4CAZBDfo0ZC1QYS1sOUsdJdQoMCdCN2CGETBfpaMgwPFnZCllecxOhV5S26gW67RmJUMG9CQZD',
+        access_token: 'EAAapnvGNVhQBAMNo3W7Sjj0K6ufzo4NMZCPBFdeZCyIIuITNHPZAf3sLkHz6zhqAuYyA62fEZBUtBQX2RZCagZC9RVjd6kVu959zLAMgls9b68wG5hPuD3ZClQIvFyxtZAHL3Xbdiis5uoZBheQPVonhvvSus65if2R0YTMg7sG2hKPHTd7OH7VZBJ',
       },
       (igUser) => {
         if (!igUser || igUser.error) {
