@@ -42,4 +42,64 @@ router.post('/users/new/:username', (req, res) => {
   });
 });
 
+router.get('/campaigns', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  Campaign.find({ company_id: userId })
+    .populate('company_id')
+    .populate('influencer_id')
+    .sort({ updated_at: -1 })
+    .then((campaigns) => {
+      res.json(campaigns);
+    })
+    .catch(next);
+});
+
+router.put('/updateUser', (req, res, next) => {
+  if (req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+
+  const updateUser = {
+    username: req.body.username,
+    bio: req.body.bio,
+  };
+
+  Company.findByIdAndUpdate(userId, updateUser)
+    .then((updatedCompany) => {
+      res.json(updatedCompany);
+      console.log(updatedCompany);
+    })
+    .catch(next);
+});
+
+router.post('/newcampaign', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const newCampaign = Campaign({
+    /* eslint-disable */
+    company_id: req.session.currentUser._id, 
+    /* eslint-enable */
+    title: req.body.title,
+    description: req.body.description,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+  });
+
+  return newCampaign.save().then(() => {
+    res.json(newCampaign);
+  })
+    .catch(next);
+});
+
 module.exports = router;
