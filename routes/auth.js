@@ -11,6 +11,7 @@ const { isLoggedIn } = require('../helpers/middleware');
 router.get('/me', (req, res, next) => {
   console.log('me', req.session.currentUser);
   if (req.session.currentUser) {
+    
     res.json(req.session.currentUser);
   } else {
     res.status(404).json({ error: 'not-found' });
