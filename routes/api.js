@@ -59,25 +59,27 @@ router.get('/campaigns', (req, res, next) => {
     .catch(next);
 });
 
-router.put('/updateUser', (req, res, next) => {
-  console.log('user: ', req.body);
-  if (req.session.currentUser) {
+router.put('/update-user', (req, res, next) => {
+  if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
   /* eslint-disable */
   const userId = req.session.currentUser._id;
   /* eslint-enable */
+  const options = {
+    new: true,
+  };
 
   const updateUser = {
     username: req.body.username,
     bio: req.body.bio,
   };
 
-  Company.findByIdAndUpdate(userId, updateUser)
+  Company.findByIdAndUpdate(userId, updateUser, options)
     .then((updatedCompany) => {
-      res.json(updatedCompany);
-      console.log(updatedCompany);
+      req.session.currentUser = updatedCompany;
+      res.status(200).json(updatedCompany);
     })
     .catch(next);
 });
