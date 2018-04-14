@@ -125,4 +125,11 @@ router.post('/newcampaign', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/campaigns/campaign-detail', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  console.log(req.params);
+});
+
 module.exports = router;
