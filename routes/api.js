@@ -60,6 +60,7 @@ router.get('/campaigns', (req, res, next) => {
 });
 
 router.put('/updateUser', (req, res, next) => {
+  console.log('user: ', req.body);
   if (req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
