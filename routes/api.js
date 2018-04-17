@@ -79,7 +79,7 @@ router.get('/campaigns', (req, res, next) => {
     .catch(next);
 });
 
-router.put('/update-user', (req, res, next) => {
+router.put('/update-company', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
