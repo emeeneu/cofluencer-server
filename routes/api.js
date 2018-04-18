@@ -6,7 +6,6 @@ const Company = require('../models/company');
 const Influencer = require('../models/influencer');
 const Campaign = require('../models/campaign');
 
-
 const TwitterPackage = require('twitter');
 
 const secret = {
@@ -17,17 +16,16 @@ const secret = {
 };
 const Twitter = new TwitterPackage(secret);
 
-router.get('/twt/:twtUserName', (req, res) => {
-  console.log('twitter go');
-  const twtUser = req.params.twtUserName;
-  Twitter.get('users/search', { q: twtUser }, (error, user) => {
-    console.log(user);
-    res.status(200).json({ user });
-  });
-});
-
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
+});
+
+router.get('/twt/:twtUserName', (req, res) => {
+  const twtUser = req.params.twtUserName;
+  Twitter.get('users/search', { q: twtUser }, (error, user) => {
+    // console.log(user);
+    res.status(200).json({ user });
+  });
 });
 
 // los parametros pasarlos por las ajaxcall!
