@@ -16,6 +16,24 @@ const secret = {
 };
 const Twitter = new TwitterPackage(secret);
 
+const YouTube = require('youtube-node');
+
+const youTube = new YouTube();
+
+youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
+
+router.get('/youtube/:ytUserName', (req, res) => {
+  const ytUser = req.params.ytUserName;
+  youTube.search('', 5, { channelId: 'UCjajWs4QjGEoSJQ56XxVDkQ' }, (error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log(JSON.stringify(result, null, 2));
+      res.status(200).json({ result });
+    }
+  });
+});
+
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
 });
@@ -24,7 +42,10 @@ router.get('/twt/:twtUserName', (req, res) => {
   const twtUser = req.params.twtUserName;
   Twitter.get('users/search', { q: twtUser }, (error, user) => {
     // console.log(user);
-    res.status(200).json({ user });
+    Twitter.get('statuses/user_timeline', { user_id: user.user_id }, (err, tweets) => {
+      // console.log(tweets, err);
+      res.status(200).json({ user, tweets });
+    });
   });
 });
 
