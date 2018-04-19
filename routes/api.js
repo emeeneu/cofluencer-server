@@ -22,13 +22,12 @@ const youTube = new YouTube();
 
 youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 
-router.get('/youtube/:ytUserName', (req, res) => {
-  const ytUser = req.params.ytUserName;
-  youTube.search('', 5, { channelId: 'UCjajWs4QjGEoSJQ56XxVDkQ' }, (error, result) => {
+router.get('/youtube/:ytId', (req, res) => {
+  // const ytId = req.params.ytId;
+  youTube.search('', 5, { channelId: 'UCHG_EBX67u66exnJd9O9J1Q' }, (error, result) => {
     if (error) {
       console.log(error);
     } else {
-      console.log(JSON.stringify(result, null, 2));
       res.status(200).json({ result });
     }
   });
@@ -41,8 +40,8 @@ router.get('/private', (req, res) => {
 router.get('/twt/:twtUserName', (req, res) => {
   const twtUser = req.params.twtUserName;
   Twitter.get('users/search', { q: twtUser }, (error, user) => {
-    // console.log(user);
-    Twitter.get('statuses/user_timeline', { user_id: user.user_id }, (err, tweets) => {
+    console.log(user);
+    Twitter.get('statuses/user_timeline', { user_id: user[0].id }, (err, tweets) => {
       // console.log(tweets, err);
       res.status(200).json({ user, tweets });
     });
