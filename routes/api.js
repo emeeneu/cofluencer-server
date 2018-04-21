@@ -23,8 +23,8 @@ const youTube = new YouTube();
 youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 
 router.get('/youtube/:ytId', (req, res) => {
-  // const ytId = req.params.ytId;
-  youTube.search('', 5, { channelId: 'UCHG_EBX67u66exnJd9O9J1Q' }, (error, result) => {
+  const ytId = req.params.ytId;
+  youTube.search('', 4, { channelId: ytId }, (error, result) => {
     if (error) {
       console.log(error);
     } else {
@@ -109,17 +109,35 @@ router.put('/update-user', (req, res, next) => {
     new: true,
   };
 
-  const updateUser = {
-    username: req.body.username,
-    bio: req.body.bio,
-  };
+  if (req.session.currentUser.role === 'influencer') {
+    const updateUser = {
+      username: req.body.username,
+      bio: req.body.bio,
+      socialLinks: {
+        youtube: req.body.youtube,
+        twitter: req.body.twitter,
+      },
+    };
 
-  Company.findByIdAndUpdate(userId, updateUser, options)
-    .then((updatedCompany) => {
-      req.session.currentUser = updatedCompany;
-      res.status(200).json(updatedCompany);
-    })
-    .catch(next);
+    Influencer.findByIdAndUpdate(userId, updateUser, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  } else if (req.session.currentUser.role === 'company') {
+    const updateUser = {
+      username: req.body.username,
+      bio: req.body.bio,
+    };
+
+    Company.findByIdAndUpdate(userId, updateUser, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  }
 });
 
 router.post('/newcampaign', (req, res, next) => {
