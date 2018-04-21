@@ -11,7 +11,6 @@ const { isLoggedIn } = require('../helpers/middleware');
 router.get('/me', (req, res, next) => {
   console.log('me', req.session.currentUser);
   if (req.session.currentUser) {
-    
     res.json(req.session.currentUser);
   } else {
     res.status(404).json({ error: 'not-found' });
@@ -23,13 +22,13 @@ router.post('/login/company', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
-  Company.findOne({ username })
+  Company.findOne({ email })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ error: 'not-found' });
@@ -48,13 +47,13 @@ router.post('/login/influencer', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
-  Influencer.findOne({ username })
+  Influencer.findOne({ email })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ error: 'not-found' });
