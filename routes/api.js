@@ -16,6 +16,23 @@ const secret = {
 };
 const Twitter = new TwitterPackage(secret);
 
+const YouTube = require('youtube-node');
+
+const youTube = new YouTube();
+
+youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
+
+router.get('/youtube/:ytId', (req, res) => {
+  const ytId = req.params.ytId;
+  youTube.search('', 4, { channelId: ytId }, (error, result) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.status(200).json({ result });
+    }
+  });
+});
+
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
 });
@@ -23,8 +40,11 @@ router.get('/private', (req, res) => {
 router.get('/twt/:twtUserName', (req, res) => {
   const twtUser = req.params.twtUserName;
   Twitter.get('users/search', { q: twtUser }, (error, user) => {
-    // console.log(user);
-    res.status(200).json({ user });
+    console.log(user);
+    Twitter.get('statuses/user_timeline', { user_id: user[0].id }, (err, tweets) => {
+      // console.log(tweets, err);
+      res.status(200).json({ user, tweets });
+    });
   });
 });
 
@@ -89,17 +109,35 @@ router.put('/update-company', (req, res, next) => {
     new: true,
   };
 
-  const updateUser = {
-    username: req.body.username,
-    bio: req.body.bio,
-  };
+  if (req.session.currentUser.role === 'influencer') {
+    const updateUser = {
+      username: req.body.username,
+      bio: req.body.bio,
+      socialLinks: {
+        youtube: req.body.youtube,
+        twitter: req.body.twitter,
+      },
+    };
 
-  Company.findByIdAndUpdate(userId, updateUser, options)
-    .then((updatedCompany) => {
-      req.session.currentUser = updatedCompany;
-      res.status(200).json(updatedCompany);
-    })
-    .catch(next);
+    Influencer.findByIdAndUpdate(userId, updateUser, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  } else if (req.session.currentUser.role === 'company') {
+    const updateUser = {
+      username: req.body.username,
+      bio: req.body.bio,
+    };
+
+    Company.findByIdAndUpdate(userId, updateUser, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  }
 });
 
 router.put('/:campaignid/update-campaign', (req, res, next) => {
