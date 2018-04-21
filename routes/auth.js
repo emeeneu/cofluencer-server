@@ -73,9 +73,9 @@ router.post('/brand/signup', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!username || !password) {
+  if (!username || !email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
@@ -90,6 +90,7 @@ router.post('/brand/signup', (req, res, next) => {
 
       const newUser = Company({
         username,
+        email,
         password: hashPass,
       });
 
