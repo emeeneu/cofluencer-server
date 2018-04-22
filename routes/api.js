@@ -186,6 +186,24 @@ router.post('/newcampaign', (req, res, next) => {
     .catch(next);
 });
 
+router.delete('/:campaignid/delete-campaign', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+
+  const campaignId = req.params.campaignid;
+
+  Campaign.findByIdAndRemove(campaignId)
+    .then((deletedCampaign) => {
+      return res.status(200).json(deletedCampaign);
+    })
+    .catch(next);
+});
+
 router.get('/campaigns/:id', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
