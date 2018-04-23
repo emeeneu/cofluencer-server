@@ -47,13 +47,13 @@ router.post('/login/influencer', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
-  Influencer.findOne({ username })
+  Influencer.findOne({ email })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ error: 'not-found' });

@@ -112,6 +112,8 @@ router.put('/update-user', (req, res, next) => {
   if (req.session.currentUser.role === 'influencer') {
     const updateUser = {
       username: req.body.username,
+      email: req.body.email,
+      name: req.body.name,
       bio: req.body.bio,
       socialLinks: {
         youtube: req.body.socialLinks.youtube,
