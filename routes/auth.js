@@ -11,7 +11,6 @@ const { isLoggedIn } = require('../helpers/middleware');
 router.get('/me', (req, res, next) => {
   console.log('me', req.session.currentUser);
   if (req.session.currentUser) {
-    
     res.json(req.session.currentUser);
   } else {
     res.status(404).json({ error: 'not-found' });
@@ -107,9 +106,9 @@ router.post('/influencer/signup', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!username || !password) {
+  if (!username || !email || !password) {
     return res.status(422).res.json({ error: 'unauthorized' });
   }
 
@@ -124,6 +123,7 @@ router.post('/influencer/signup', (req, res, next) => {
 
       const newUser = Influencer({
         username,
+        email,
         password: hashPass,
       });
 

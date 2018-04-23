@@ -97,7 +97,7 @@ router.get('/campaigns', (req, res, next) => {
     .catch(next);
 });
 
-router.put('/update-company', (req, res, next) => {
+router.put('/update-user', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
@@ -114,8 +114,8 @@ router.put('/update-company', (req, res, next) => {
       username: req.body.username,
       bio: req.body.bio,
       socialLinks: {
-        youtube: req.body.youtube,
-        twitter: req.body.twitter,
+        youtube: req.body.socialLinks.youtube,
+        twitter: req.body.socialLinks.twitter,
       },
     };
 
@@ -192,9 +192,7 @@ router.get('/campaigns/:id', (req, res, next) => {
   }
 
   Campaign.findById(req.params.id)
-    .then((campaign) => {
-      return res.status(200).json(campaign);
-    })
+    .then(campaign => res.status(200).json(campaign))
     .catch(next);
 });
 
