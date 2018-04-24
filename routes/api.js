@@ -198,4 +198,15 @@ router.get('/campaigns/:id', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/list-campaigns', (req, res, next) => {
+  Campaign.find()
+    .populate('company_id')
+    .populate('influencer_id')
+    .sort({ updated_at: -1 })
+    .then((campaigns) => {
+      res.json(campaigns);
+    })
+    .catch(next);
+});
+
 module.exports = router;
