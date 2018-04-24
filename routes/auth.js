@@ -106,9 +106,9 @@ router.post('/influencer/signup', (req, res, next) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
-  if (!username || !password) {
+  if (!username || !email || !password) {
     return res.status(422).res.json({ error: 'unauthorized' });
   }
 
@@ -123,6 +123,7 @@ router.post('/influencer/signup', (req, res, next) => {
 
       const newUser = Influencer({
         username,
+        email,
         password: hashPass,
       });
 

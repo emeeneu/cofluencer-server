@@ -112,6 +112,8 @@ router.put('/update-user', (req, res, next) => {
   if (req.session.currentUser.role === 'influencer') {
     const updateUser = {
       username: req.body.username,
+      email: req.body.email,
+      name: req.body.name,
       bio: req.body.bio,
       socialLinks: {
         youtube: req.body.socialLinks.youtube,
@@ -210,8 +212,17 @@ router.get('/campaigns/:id', (req, res, next) => {
   }
 
   Campaign.findById(req.params.id)
-    .then((campaign) => {
-      return res.status(200).json(campaign);
+    .then(campaign => res.status(200).json(campaign))
+    .catch(next);
+});
+
+router.get('/list-campaigns', (req, res, next) => {
+  Campaign.find()
+    .populate('company_id')
+    .populate('influencer_id')
+    .sort({ updated_at: -1 })
+    .then((campaigns) => {
+      res.json(campaigns);
     })
     .catch(next);
 });

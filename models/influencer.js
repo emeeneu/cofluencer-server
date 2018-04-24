@@ -7,7 +7,7 @@ const IgMedia = require('./ig-media');
 const influencerSchema = new Schema({
   username: String,
   role: { type: String, default: 'influencer' },
-  name: String,
+  name: { type: String, default: 'New Cofluencer' },
   lastname: String,
   email: String,
   facebookID: String,
@@ -25,8 +25,8 @@ const influencerSchema = new Schema({
   socialLinks: {
     facebook: String,
     instagram: String,
-    twitter: String,
-    youtube: String,
+    twitter: { type: String, default: null },
+    youtube: { type: String, default: null },
   },
   tags: [],
   campaignsFavs: [Schema.Types.ObjectId],
