@@ -97,6 +97,25 @@ router.get('/campaigns', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/campaigns/:company', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const companyName = req.params.company;
+  /* eslint-enable */
+  Company.findOne({ username: companyName })
+    .then((company) => {
+      Campaign.find({ company_id: company.id })
+        .sort({ updated_at: -1 })
+        .then((campaigns) => {
+          return res.status(200).json(campaigns);
+        })
+        .catch(next);
+    })
+    .catch(next);
+});
+
 router.put('/update-user', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
