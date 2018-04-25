@@ -227,4 +227,18 @@ router.get('/list-campaigns', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/company/:company', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const company = req.params.company;
+  /* eslint-enable */
+  Company.findOne({ username: company })
+    .then((theCompany) => {
+      return res.status(200).json(theCompany);
+    })
+    .catch(next);
+});
+
 module.exports = router;
