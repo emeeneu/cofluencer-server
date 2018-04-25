@@ -34,26 +34,6 @@ router.get('/youtube/:ytId', (req, res) => {
   });
 });
 
-router.post('/upload-image', upload.single('file'), (req, res, next) => {
-  /* eslint-disable */
-  const userId = req.session.currentUser._id;
-  /* eslint-enable */
-  const imageProfile = `/uploads/${req.file.filename}`;
-  const options = {
-    new: true,
-  };
-  if (req.session.currentUser.role === 'company') {
-    Company.findByIdAndUpdate(userId, imageProfile, options)
-      .then((updatedCompany) => {
-        console.log('archivo subido');
-        res.status(200).json(updatedCompany);
-      })
-      .catch((next) => {
-        console.log('no se ha subido');
-      });
-  }
-});
-
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
 });
@@ -133,6 +113,24 @@ router.get('/campaigns/:company', (req, res, next) => {
           return res.status(200).json(campaigns);
         })
         .catch(next);
+    })
+    .catch(next);
+});
+
+router.post('/upload-image', upload.single('file'), (req, res, next) => {
+  console.log('entra en la api');
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  const updateImage = {
+    profileImage: `/uploads/${req.file.filename}`,
+  };
+  const options = {
+    new: true,
+  };
+  Company.findOneAndUpdate(userId, updateImage, options)
+    .then((updated) => {
+      console.log(updated);
     })
     .catch(next);
 });
