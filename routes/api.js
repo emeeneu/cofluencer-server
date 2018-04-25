@@ -45,9 +45,12 @@ router.post('/upload-image', upload.single('file'), (req, res, next) => {
   if (req.session.currentUser.role === 'company') {
     Company.findByIdAndUpdate(userId, imageProfile, options)
       .then((updatedCompany) => {
+        console.log('archivo subido');
         res.status(200).json(updatedCompany);
       })
-      .catch(next);
+      .catch((next) => {
+        console.log('no se ha subido');
+      });
   }
 });
 
