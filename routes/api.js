@@ -118,19 +118,19 @@ router.get('/campaigns/:company', (req, res, next) => {
 });
 
 router.post('/upload-image', upload.single('file'), (req, res, next) => {
-  console.log('entra en la api');
   /* eslint-disable */
   const userId = req.session.currentUser._id;
   /* eslint-enable */
   const updateImage = {
-    profileImage: `/uploads/${req.file.filename}`,
+    profileImage: `http://localhost:3000/uploads/${req.file.filename}`,
   };
   const options = {
     new: true,
   };
-  Company.findOneAndUpdate(userId, updateImage, options)
-    .then((updated) => {
-      console.log(updated);
+  Company.findByIdAndUpdate(userId, updateImage, options)
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).json(updatedUser);
     })
     .catch(next);
 });
