@@ -1,4 +1,5 @@
 const express = require('express');
+const upload = require('../helpers/multer');
 
 const router = express.Router();
 const FB = require('fb');
@@ -124,6 +125,24 @@ router.get('/campaigns/:company', (req, res, next) => {
         .sort({ updated_at: -1 })
         .then(campaigns => res.status(200).json(campaigns))
         .catch(next);
+    })
+    .catch(next);
+});
+
+router.post('/upload-image', upload.single('file'), (req, res, next) => {
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  const updateImage = {
+    profileImage: `http://localhost:3000/uploads/${req.file.filename}`,
+  };
+  const options = {
+    new: true,
+  };
+  Company.findByIdAndUpdate(userId, updateImage, options)
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).json(updatedUser);
     })
     .catch(next);
 });
