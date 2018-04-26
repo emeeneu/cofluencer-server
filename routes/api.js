@@ -17,8 +17,10 @@ const secret = {
 const Twitter = new TwitterPackage(secret);
 
 const YouTube = require('youtube-node');
+const YouTubeTwo = require('simple-youtube-api');
 
 const youTube = new YouTube();
+const youTubeTwo = new YouTubeTwo('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 
 youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 
@@ -28,6 +30,18 @@ router.get('/youtube/:ytId', (req, res) => {
     if (error) {
       console.log(error);
     } else {
+      // youTube.getById('CZqbkoEMBfU', (err, resu) => {
+      //   if (error) {
+      //     console.log(err);
+      //   } else {
+      //     console.log(JSON.stringify(resu, null, 2));
+      //   }
+      // });
+      youTubeTwo.getChannel(`https://www.youtube.com/channel/${ytId}`)
+        .then((data) => {
+          console.log(data);
+        })
+        .catch(console.error);
       res.status(200).json({ result });
     }
   });
@@ -235,8 +249,22 @@ router.get('/list-campaigns', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
-  console.log(req.session.currentUser);
   Campaign.find()
+    .populate('company_id')
+    .populate('influencer_id')
+    .sort({ create_at: -1 })
+    .then((campaigns) => {
+      console.log(campaigns[0]);
+      res.json(campaigns);
+    })
+    .catch(next);
+});
+
+router.get('/list-my-campaigns', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  Campaign.find({ influencer_id: req.session.currentUser })
     .populate('company_id')
     .populate('influencer_id')
     .sort({ create_at: -1 })
