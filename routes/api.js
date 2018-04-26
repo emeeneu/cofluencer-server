@@ -108,9 +108,7 @@ router.get('/campaigns/:company', (req, res, next) => {
     .then((company) => {
       Campaign.find({ company_id: company.id })
         .sort({ updated_at: -1 })
-        .then((campaigns) => {
-          return res.status(200).json(campaigns);
-        })
+        .then(campaigns => res.status(200).json(campaigns))
         .catch(next);
     })
     .catch(next);
@@ -219,9 +217,7 @@ router.delete('/:campaignid/delete-campaign', (req, res, next) => {
   const campaignId = req.params.campaignid;
 
   Campaign.findByIdAndRemove(campaignId)
-    .then((deletedCampaign) => {
-      return res.status(200).json(deletedCampaign);
-    })
+    .then(deletedCampaign => res.status(200).json(deletedCampaign))
     .catch(next);
 });
 
@@ -236,11 +232,16 @@ router.get('/campaigns/:id', (req, res, next) => {
 });
 
 router.get('/list-campaigns', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  console.log(req.session.currentUser);
   Campaign.find()
     .populate('company_id')
     .populate('influencer_id')
-    .sort({ updated_at: -1 })
+    .sort({ create_at: -1 })
     .then((campaigns) => {
+      console.log(campaigns[0]);
       res.json(campaigns);
     })
     .catch(next);
@@ -254,8 +255,42 @@ router.get('/company/:company', (req, res, next) => {
   const company = req.params.company;
   /* eslint-enable */
   Company.findOne({ username: company })
-    .then((theCompany) => {
-      return res.status(200).json(theCompany);
+    .then(theCompany => res.status(200).json(theCompany))
+    .catch(next);
+});
+
+router.put('/campaigns/join/:idCampaign', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  const idCampaign = req.params.idCampaign;
+  /* eslint-enable */
+  const options = {
+    new: true,
+  };
+  Campaign.findByIdAndUpdate({ _id: idCampaign }, { $push: { influencer_id: userId } }, options)
+    .then((updatedCampaign) => {
+      res.status(200).json(updatedCampaign);
+    })
+    .catch(next);
+});
+
+router.put('/campaigns/out/:idCampaign', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  const idCampaign = req.params.idCampaign;
+  /* eslint-enable */
+  const options = {
+    new: true,
+  };
+  Campaign.findByIdAndUpdate({ _id: idCampaign }, { $pullAll: { influencer_id: [userId] } }, options)
+    .then((updatedCampaign) => {
+      res.status(200).json(updatedCampaign);
     })
     .catch(next);
 });
