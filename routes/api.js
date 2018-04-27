@@ -176,6 +176,7 @@ router.put('/update-user', (req, res, next) => {
         youtube: req.body.socialLinks.youtube,
         twitter: req.body.socialLinks.twitter,
       },
+      tags: req.body.tags,
     };
 
     Influencer.findByIdAndUpdate(userId, updateUser, options)
