@@ -139,12 +139,19 @@ router.post('/upload-image', upload.single('file'), (req, res, next) => {
   const options = {
     new: true,
   };
-  Company.findByIdAndUpdate(userId, updateImage, options)
-    .then((updatedUser) => {
-      console.log(updatedUser);
-      res.status(200).json(updatedUser);
-    })
-    .catch(next);
+  if (req.session.currentUser.role === 'influencer') {
+    Influencer.findByIdAndUpdate(userId, updateImage, options)
+      .then((updatedUser) => {
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  } else if (req.session.currentUser.role === 'company') {
+    Company.findByIdAndUpdate(userId, updateImage, options)
+      .then((updatedUser) => {
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  }
 });
 
 router.put('/update-user', (req, res, next) => {
