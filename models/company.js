@@ -5,15 +5,11 @@ const Schema = mongoose.Schema;
 
 const companySchema = new Schema({
   username: String,
+  brandName: String,
   role: { type: String, default: 'company' },
   email: String,
   password: String,
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zip: Number,
-  },
+  city: String,
   bio: String,
   profileImage: String,
   socialLinks: [{}],

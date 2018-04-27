@@ -180,6 +180,9 @@ router.put('/update-user', (req, res, next) => {
   } else if (req.session.currentUser.role === 'company') {
     const updateUser = {
       username: req.body.username,
+      brandName: req.body.brandName,
+      email: req.body.email,
+      city: req.body.city,
       bio: req.body.bio,
     };
 
