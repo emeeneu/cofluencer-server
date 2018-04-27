@@ -85,6 +85,28 @@ router.get('/twt/:twtUserName', (req, res) => {
   });
 });
 
+router.put('/twt/add-account', (req, res) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  const options = {
+    new: true,
+  };
+  const { username } = req.body;
+
+  Influencer.findByIdAndUpdate(userId, { 'socialLinks.twitter': username }, options)
+    .then((updatedUser) => {
+      req.session.currentUser = updatedUser;
+      res.status(200).json(updatedUser);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 // los parametros pasarlos por las ajaxcall!
 router.get('/ig/:igUserName', (req, res) => {
   const instaUser = ((igUserName, cb) => {
