@@ -141,7 +141,8 @@ router.post('/upload-image', upload.single('file'), (req, res, next) => {
   };
   Company.findByIdAndUpdate(userId, updateImage, options)
     .then((updatedUser) => {
-      console.log(updatedUser);
+      console.log('updatedImageUser: ', updatedUser);
+      req.session.currentUser = updatedUser;
       res.status(200).json(updatedUser);
     })
     .catch(next);
