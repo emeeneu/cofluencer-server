@@ -26,7 +26,7 @@ const youTubeTwo = new YouTubeTwo('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 youTube.setKey('AIzaSyApWQSH8w3PpqVTrpu3739e8nDSEQVQC-8');
 
 router.get('/youtube/:ytId', (req, res) => {
-  const ytId = req.params.ytId;
+  const { ytId } = req.params;
   youTube.search('', 4, { channelId: ytId }, (error, result) => {
     if (error) {
       res.status(405).json({ error });
@@ -238,6 +238,7 @@ router.put('/update-user', (req, res, next) => {
       email: req.body.email,
       city: req.body.city,
       bio: req.body.bio,
+      tags: req.body.tags,
     };
 
     Company.findByIdAndUpdate(userId, updateUser, options)
