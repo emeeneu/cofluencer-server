@@ -29,7 +29,7 @@ router.get('/youtube/:ytId', (req, res) => {
   const ytId = req.params.ytId;
   youTube.search('', 4, { channelId: ytId }, (error, result) => {
     if (error) {
-      console.log(error);
+      res.status(405).json({ error });
     } else {
       // youTube.getById('CZqbkoEMBfU', (err, resu) => {
       //   if (error) {
@@ -48,6 +48,28 @@ router.get('/youtube/:ytId', (req, res) => {
   });
 });
 
+router.put('/youtube/add-account', (req, res) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  const options = {
+    new: true,
+  };
+  const { channelId } = req.body;
+
+  Influencer.findByIdAndUpdate(userId, { 'socialLinks.youtube': channelId }, options)
+    .then((updatedUser) => {
+      req.session.currentUser = updatedUser;
+      res.status(200).json(updatedUser);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 router.get('/private', (req, res) => {
   res.status(200).json({ message: 'Hola estas en la ruta' });
 });
@@ -61,6 +83,28 @@ router.get('/twt/:twtUserName', (req, res) => {
       res.status(200).json({ user, tweets });
     });
   });
+});
+
+router.put('/twt/add-account', (req, res) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  /* eslint-disable */
+  const userId = req.session.currentUser._id;
+  /* eslint-enable */
+  const options = {
+    new: true,
+  };
+  const { username } = req.body;
+
+  Influencer.findByIdAndUpdate(userId, { 'socialLinks.twitter': username }, options)
+    .then((updatedUser) => {
+      req.session.currentUser = updatedUser;
+      res.status(200).json(updatedUser);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 // los parametros pasarlos por las ajaxcall!
@@ -139,12 +183,21 @@ router.post('/upload-image', upload.single('file'), (req, res, next) => {
   const options = {
     new: true,
   };
-  Company.findByIdAndUpdate(userId, updateImage, options)
-    .then((updatedUser) => {
-      req.session.currentUser = updatedUser;
-      res.status(200).json(updatedUser);
-    })
-    .catch(next);
+  if (req.session.currentUser.role === 'influencer') {
+    Influencer.findByIdAndUpdate(userId, updateImage, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  } else if (req.session.currentUser.role === 'company') {
+    Company.findByIdAndUpdate(userId, updateImage, options)
+      .then((updatedUser) => {
+        req.session.currentUser = updatedUser;
+        res.status(200).json(updatedUser);
+      })
+      .catch(next);
+  }
 });
 
 router.put('/update-user', (req, res, next) => {
@@ -169,6 +222,7 @@ router.put('/update-user', (req, res, next) => {
         youtube: req.body.socialLinks.youtube,
         twitter: req.body.socialLinks.twitter,
       },
+      tags: req.body.tags,
     };
 
     Influencer.findByIdAndUpdate(userId, updateUser, options)
