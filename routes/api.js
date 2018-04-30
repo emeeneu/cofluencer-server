@@ -286,6 +286,7 @@ router.post('/newcampaign', (req, res, next) => {
     /* eslint-enable */
     title: req.body.title,
     description: req.body.description,
+    tags: req.body.tags,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
   });
