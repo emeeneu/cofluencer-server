@@ -12,7 +12,7 @@ const companySchema = new Schema({
   city: String,
   bio: String,
   profileImage: String,
-  avatar: String,
+  coverImage: String,
   socialLinks: [{}],
   tags: [],
   influencersFavs: [Schema.Types.ObjectId],

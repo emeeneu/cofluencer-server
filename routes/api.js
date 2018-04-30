@@ -173,30 +173,53 @@ router.get('/campaigns/:company', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/upload-image', upload.single('file'), (req, res, next) => {
+router.post('/upload-image/:image', upload.single('file'), (req, res, next) => {
   /* eslint-disable */
+  const image = req.params.image;
   const userId = req.session.currentUser._id;
   /* eslint-enable */
-  const updateImage = {
-    profileImage: `http://localhost:3000/uploads/${req.file.filename}`,
-  };
   const options = {
     new: true,
   };
-  if (req.session.currentUser.role === 'influencer') {
-    Influencer.findByIdAndUpdate(userId, updateImage, options)
-      .then((updatedUser) => {
-        req.session.currentUser = updatedUser;
-        res.status(200).json(updatedUser);
-      })
-      .catch(next);
-  } else if (req.session.currentUser.role === 'company') {
-    Company.findByIdAndUpdate(userId, updateImage, options)
-      .then((updatedUser) => {
-        req.session.currentUser = updatedUser;
-        res.status(200).json(updatedUser);
-      })
-      .catch(next);
+
+  if (image === ':coverImage') {
+    const updateImage = {
+      coverImage: `http://localhost:3000/uploads/${req.file.filename}`,
+    };
+    if (req.session.currentUser.role === 'influencer') {
+      Influencer.findByIdAndUpdate(userId, updateImage, options)
+        .then((updatedUser) => {
+          req.session.currentUser = updatedUser;
+          res.status(200).json(updatedUser);
+        })
+        .catch(next);
+    } else if (req.session.currentUser.role === 'company') {
+      Company.findByIdAndUpdate(userId, updateImage, options)
+        .then((updatedUser) => {
+          req.session.currentUser = updatedUser;
+          res.status(200).json(updatedUser);
+        })
+        .catch(next);
+    }
+  } else if (image === ':profileImage') {
+    const updateImage = {
+      profileImage: `http://localhost:3000/uploads/${req.file.filename}`,
+    };
+    if (req.session.currentUser.role === 'influencer') {
+      Influencer.findByIdAndUpdate(userId, updateImage, options)
+        .then((updatedUser) => {
+          req.session.currentUser = updatedUser;
+          res.status(200).json(updatedUser);
+        })
+        .catch(next);
+    } else if (req.session.currentUser.role === 'company') {
+      Company.findByIdAndUpdate(userId, updateImage, options)
+        .then((updatedUser) => {
+          req.session.currentUser = updatedUser;
+          res.status(200).json(updatedUser);
+        })
+        .catch(next);
+    }
   }
 });
 
