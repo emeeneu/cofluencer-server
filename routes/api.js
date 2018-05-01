@@ -166,6 +166,8 @@ router.get('/campaigns/:company', (req, res, next) => {
   Company.findOne({ username: companyName })
     .then((company) => {
       Campaign.find({ company_id: company.id })
+        .populate('company_id')
+        .populate('influencer_id')
         .sort({ updated_at: -1 })
         .then(campaigns => res.status(200).json(campaigns))
         .catch(next);
