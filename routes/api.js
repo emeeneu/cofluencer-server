@@ -427,6 +427,27 @@ router.put('/campaigns/out/:idCampaign', (req, res, next) => {
     .catch(next);
 });
 
+router.get('/user/me', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const { _id, role } = req.session.currentUser;
+
+  if (role === 'influencer') {
+    Influencer.findById({ _id }, this.options)
+      .then((user) => {
+        res.status(200).json(user);
+      })
+      .catch(next);
+  } else if (role === 'company') {
+    Company.findById({ _id }, this.options)
+      .then((user) => {
+        res.status(200).json(user);
+      })
+      .catch(next);
+  }
+});
+
 // Messages API
 
 router.post('/send-msg', (req, res, next) => {
