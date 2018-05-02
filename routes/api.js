@@ -462,6 +462,8 @@ router.post('/send-msg', (req, res, next) => {
     from: _id,
     msg: message,
     read: true,
+    roleTo: role === 'influencer' ? 'Company' : 'Influencer',
+    roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
   };
 
   const msgContentTo = {
@@ -469,6 +471,8 @@ router.post('/send-msg', (req, res, next) => {
     from: _id,
     msg: message,
     read: false,
+    roleTo: role === 'influencer' ? 'Company' : 'Influencer',
+    roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
   };
 
   if (role === 'influencer') {
@@ -491,6 +495,26 @@ router.post('/send-msg', (req, res, next) => {
           .catch(next);
       })
       .catch(next);
+  }
+});
+
+router.get('/messages/me', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const { _id, role } = req.session.currentUser;
+
+  if (role === 'company') {
+    Company.findOne({ _id }, { messages: 1, _id: 0 }, this.options)
+      .then((userMessages) => {
+        Influencer.populate(userMessages, { path: 'messages.from' })
+          .then((messages) => {
+            res.status(200).json(messages.messages);
+          });
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    console.log('no');
   }
 });
 

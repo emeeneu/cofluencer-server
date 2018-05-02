@@ -4,8 +4,10 @@ const Schema = mongoose.Schema;
 /* eslint-enable */
 
 const msgSchema = new Schema({
-  to: Schema.Types.ObjectId,
-  from: Schema.Types.ObjectId,
+  roleTo: String,
+  to: { type: Schema.Types.ObjectId, ref: this.roleTo },
+  roleFrom: String,
+  from: { type: Schema.Types.ObjectId, ref: this.roleFrom },
   msg: String,
   read: Boolean,
 }, {
