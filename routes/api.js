@@ -6,6 +6,7 @@ const FB = require('fb');
 const Company = require('../models/company');
 const Influencer = require('../models/influencer');
 const Campaign = require('../models/campaign');
+const Msg = require('../models/msg');
 
 const TwitterPackage = require('twitter');
 
@@ -424,6 +425,52 @@ router.put('/campaigns/out/:idCampaign', (req, res, next) => {
       res.status(200).json(updatedCampaign);
     })
     .catch(next);
+});
+
+// Messages API
+
+router.post('/send-msg', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const { message, to } = req.body;
+  const { _id, role } = req.session.currentUser;
+
+  const msgContentFrom = {
+    to,
+    from: _id,
+    msg: message,
+    read: true,
+  };
+
+  const msgContentTo = {
+    to,
+    from: _id,
+    msg: message,
+    read: false,
+  };
+
+  if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $push: { messages: msgContentFrom } }, this.options)
+      .then(() => {
+        Company.findByIdAndUpdate({ _id: to }, { $push: { messages: msgContentTo } }, this.options)
+          .then((updateCompany) => {
+            res.status(200).json(updateCompany);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  } else if (role === 'company') {
+    Company.findByIdAndUpdate({ _id }, { $push: { messages: msgContentFrom } }, this.options)
+      .then(() => {
+        Influencer.findByIdAndUpdate({ _id: to }, { $push: { messages: msgContentTo } }, this.options)
+          .then((updateCompany) => {
+            res.status(200).json(updateCompany);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  }
 });
 
 module.exports = router;

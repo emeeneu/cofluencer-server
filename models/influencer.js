@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 /* eslint-enable */
 const IgMedia = require('./ig-media');
+const Msg = require('./msg');
 
 const influencerSchema = new Schema({
   username: String,
@@ -30,6 +31,8 @@ const influencerSchema = new Schema({
     youtube: { type: String, default: null },
   },
   tags: [],
+  no_read: { type: Number, default: 0 },
+  messages: [Msg.schema],
   campaignsFavs: [Schema.Types.ObjectId],
   instagram: {
     username: String,
