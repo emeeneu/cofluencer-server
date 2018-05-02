@@ -18,6 +18,7 @@ const companySchema = new Schema({
   tags: [],
   no_read: { type: Number, default: 0 },
   messages: [Msg.schema],
+  send: [Msg.schema],
   influencersFavs: [Schema.Types.ObjectId],
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

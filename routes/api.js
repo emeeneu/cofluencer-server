@@ -476,7 +476,7 @@ router.post('/send-msg', (req, res, next) => {
   };
 
   if (role === 'influencer') {
-    Influencer.findByIdAndUpdate({ _id }, { $push: { messages: msgContentFrom } }, this.options)
+    Influencer.findByIdAndUpdate({ _id }, { $push: { send: msgContentFrom } }, this.options)
       .then(() => {
         Company.findByIdAndUpdate({ _id: to }, { $push: { messages: msgContentTo } }, this.options)
           .then((updateCompany) => {
@@ -486,7 +486,7 @@ router.post('/send-msg', (req, res, next) => {
       })
       .catch(next);
   } else if (role === 'company') {
-    Company.findByIdAndUpdate({ _id }, { $push: { messages: msgContentFrom } }, this.options)
+    Company.findByIdAndUpdate({ _id }, { $push: { send: msgContentFrom } }, this.options)
       .then(() => {
         Influencer.findByIdAndUpdate({ _id: to }, { $push: { messages: msgContentTo } }, this.options)
           .then((updateCompany) => {
@@ -507,6 +507,8 @@ router.get('/messages/me', (req, res, next) => {
   if (role === 'company') {
     Company.findOne({ _id }, { messages: 1, _id: 0 }, this.options)
       .then((userMessages) => {
+        // const messagesForMe = userMessages.messages.fiter(msg => msg.from !== _id);
+        // console.log(messagesForMe);
         Influencer.populate(userMessages, { path: 'messages.from' })
           .then((messages) => {
             res.status(200).json(messages.messages);
@@ -514,7 +516,14 @@ router.get('/messages/me', (req, res, next) => {
       })
       .catch(next);
   } else if (role === 'influencer') {
-    console.log('no');
+    Influencer.findOne({ _id }, { messages: 1, _id: 0 }, this.options)
+      .then((userMessages) => {
+        Company.populate(userMessages, { path: 'messages.from' })
+          .then((messages) => {
+            res.status(200).json(messages.messages);
+          });
+      })
+      .catch(next);
   }
 });
 

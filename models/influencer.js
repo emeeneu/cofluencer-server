@@ -33,6 +33,7 @@ const influencerSchema = new Schema({
   tags: [],
   no_read: { type: Number, default: 0 },
   messages: [Msg.schema],
+  send: [Msg.schema],
   campaignsFavs: [Schema.Types.ObjectId],
   instagram: {
     username: String,
