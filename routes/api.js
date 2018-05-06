@@ -564,12 +564,14 @@ router.put('/messages/read/:idMessage', (req, res, next) => {
 
   const { _id, role } = req.session.currentUser;
   const { idMessage } = req.params;
+  const { read } = req.body;
   const id = mongoose.Types.ObjectId(idMessage);
+  const value = !read;
 
   if (role === 'company') {
-    Company.findByIdAndUpdate({ _id }, { messages: { _id: id } }, options)
-      .then((updateUser) => {
-        res.status(200).json(updateUser);
+    Company.updateOne({ _id, 'messages._id': id }, { $set: { 'messages.$.read': value } }, options)
+      .then((result) => {
+        res.status(200).json(result);
       })
       .catch(next);
   } else if (role === 'influencer') {
