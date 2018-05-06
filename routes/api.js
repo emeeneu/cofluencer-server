@@ -302,7 +302,9 @@ router.put('/:campaignid/update-campaign', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/newcampaign', (req, res, next) => {
+/* CREATE a new Campaign */
+router.post('/newCampaign', upload.single('file'), (req, res, next) => {
+  console.log('entra en la api');
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
@@ -312,15 +314,18 @@ router.post('/newcampaign', (req, res, next) => {
     company_id: req.session.currentUser._id, 
     /* eslint-enable */
     title: req.body.title,
+    campaignImage: `http://localhost:3000/uploads/${req.file.filename}`,
     description: req.body.description,
     tags: req.body.tags,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
   });
 
-  return newCampaign.save().then(() => {
-    res.json(newCampaign);
-  })
+  console.log('campaña nueva ', newCampaign);
+
+  return newCampaign.save()
+    .then(() => {
+      res.json(newCampaign);
+      console.log(newCampaign);
+    })
     .catch(next);
 });
 
