@@ -1,5 +1,6 @@
 const express = require('express');
 const upload = require('../helpers/multer');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 const FB = require('fb');
@@ -466,7 +467,7 @@ router.post('/send-msg', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
-  const { message, to } = req.body;
+  const { message, to, type } = req.body;
   const { _id, role } = req.session.currentUser;
 
   const msgContentFrom = {
@@ -476,6 +477,7 @@ router.post('/send-msg', (req, res, next) => {
     read: true,
     roleTo: role === 'influencer' ? 'Company' : 'Influencer',
     roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
+    type,
   };
 
   const msgContentTo = {
@@ -485,6 +487,7 @@ router.post('/send-msg', (req, res, next) => {
     read: false,
     roleTo: role === 'influencer' ? 'Company' : 'Influencer',
     roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
+    type,
   };
 
   if (role === 'influencer') {
@@ -534,6 +537,61 @@ router.get('/messages/me', (req, res, next) => {
           .then((messages) => {
             res.status(200).json(messages.messages);
           });
+      })
+      .catch(next);
+  }
+});
+
+router.put('/messages/delete/:idMessage', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { idMessage } = req.params;
+  const id = mongoose.Types.ObjectId(idMessage);
+  if (role === 'company') {
+    Company.updateOne({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
+      })
+      .catch(next);
+  }
+});
+
+router.put('/messages/read/:idMessage', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { idMessage } = req.params;
+  const { read } = req.body;
+  const id = mongoose.Types.ObjectId(idMessage);
+  const value = !read;
+
+  if (role === 'company') {
+    Company.updateOne({ _id, 'messages._id': id }, { $set: { 'messages.$.read': value } }, options)
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
       })
       .catch(next);
   }
