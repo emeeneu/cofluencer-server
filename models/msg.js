@@ -10,6 +10,7 @@ const msgSchema = new Schema({
   from: { type: Schema.Types.ObjectId, ref: this.roleFrom },
   msg: String,
   read: Boolean,
+  type: String,
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });

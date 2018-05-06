@@ -455,7 +455,7 @@ router.post('/send-msg', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
-  const { message, to } = req.body;
+  const { message, to, type } = req.body;
   const { _id, role } = req.session.currentUser;
 
   const msgContentFrom = {
@@ -465,6 +465,7 @@ router.post('/send-msg', (req, res, next) => {
     read: true,
     roleTo: role === 'influencer' ? 'Company' : 'Influencer',
     roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
+    type,
   };
 
   const msgContentTo = {
@@ -474,6 +475,7 @@ router.post('/send-msg', (req, res, next) => {
     read: false,
     roleTo: role === 'influencer' ? 'Company' : 'Influencer',
     roleFrom: role === 'influencer' ? 'Influencer' : 'Company',
+    type,
   };
 
   if (role === 'influencer') {
@@ -540,7 +542,7 @@ router.put('/messages/delete/:idMessage', (req, res, next) => {
   const { idMessage } = req.params;
   const id = mongoose.Types.ObjectId(idMessage);
   if (role === 'company') {
-    Company.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+    Company.updateOne({ _id }, { $pull: { messages: { _id: id } } }, options)
       .then((updateUser) => {
         res.status(200).json(updateUser);
       })
