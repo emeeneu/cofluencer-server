@@ -380,16 +380,22 @@ router.get('/list-my-campaigns', (req, res, next) => {
     .catch(next);
 });
 
-router.get('/company/:company', (req, res, next) => {
+router.get('/company/:user', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
   /* eslint-disable */
-  const company = req.params.company;
+  const user = req.params.user;
   /* eslint-enable */
-  Company.findOne({ username: company })
-    .then(theCompany => res.status(200).json(theCompany))
-    .catch(next);
+  if (req.session.currentUser.role === 'influencer') {
+    Company.findOne({ username: user })
+      .then(theCompany => res.status(200).json(theCompany))
+      .catch(next);
+  } else {
+    Influencer.findOne({ username: user })
+      .then(theInfluencer => res.status(200).json(theInfluencer))
+      .catch(next);
+  }
 });
 
 router.put('/campaigns/join/:idCampaign', (req, res, next) => {
