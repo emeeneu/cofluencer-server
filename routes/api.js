@@ -1,5 +1,6 @@
 const express = require('express');
 const upload = require('../helpers/multer');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 const FB = require('fb');
@@ -522,6 +523,59 @@ router.get('/messages/me', (req, res, next) => {
           .then((messages) => {
             res.status(200).json(messages.messages);
           });
+      })
+      .catch(next);
+  }
+});
+
+router.put('/messages/delete/:idMessage', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { idMessage } = req.params;
+  const id = mongoose.Types.ObjectId(idMessage);
+  if (role === 'company') {
+    Company.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
+      })
+      .catch(next);
+  }
+});
+
+router.put('/messages/read/:idMessage', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { idMessage } = req.params;
+  const id = mongoose.Types.ObjectId(idMessage);
+
+  if (role === 'company') {
+    Company.findByIdAndUpdate({ _id }, { messages: { _id: id } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
+      .then((updateUser) => {
+        res.status(200).json(updateUser);
       })
       .catch(next);
   }
