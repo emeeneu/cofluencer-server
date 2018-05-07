@@ -553,6 +553,7 @@ router.put('/messages/delete/:idMessage', (req, res, next) => {
   const { _id, role } = req.session.currentUser;
   const { idMessage } = req.params;
   const id = mongoose.Types.ObjectId(idMessage);
+
   if (role === 'company') {
     Company.updateOne({ _id }, { $pull: { messages: { _id: id } } }, options)
       .then((updateUser) => {
@@ -589,9 +590,81 @@ router.put('/messages/read/:idMessage', (req, res, next) => {
       })
       .catch(next);
   } else if (role === 'influencer') {
-    Influencer.findByIdAndUpdate({ _id }, { $pull: { messages: { _id: id } } }, options)
-      .then((updateUser) => {
-        res.status(200).json(updateUser);
+    Influencer.updateOne({ _id, 'messages._id': id }, { $set: { 'messages.$.read': value } }, options)
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch(next);
+  }
+});
+
+// Follow & Unfollow function
+
+router.put('/follow/:userId', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { userId } = req.params;
+  const id = mongoose.Types.ObjectId(userId);
+
+  if (role === 'company') {
+    Company.findByIdAndUpdate({ _id }, { $push: { influencersFavs: userId } }, options)
+      .then(() => {
+        Influencer.findByIdAndUpdate({ _id: id }, { $push: { followers: _id } }, options)
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $push: { companiesFavs: userId } }, options)
+      .then(() => {
+        Company.findByIdAndUpdate({ _id: id }, { $push: { followers: _id } }, options)
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  }
+});
+
+router.put('/unfollow/:userId', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const options = {
+    new: true,
+  };
+
+  const { _id, role } = req.session.currentUser;
+  const { userId } = req.params;
+  const id = mongoose.Types.ObjectId(userId);
+
+  if (role === 'company') {
+    Company.findByIdAndUpdate({ _id }, { $pull: { influencersFavs: userId } }, options)
+      .then(() => {
+        Influencer.findByIdAndUpdate({ _id: id }, { $pull: { followers: _id } }, options)
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch(next);
+      })
+      .catch(next);
+  } else if (role === 'influencer') {
+    Influencer.findByIdAndUpdate({ _id }, { $pull: { companiesFavs: userId } }, options)
+      .then(() => {
+        Company.findByIdAndUpdate({ _id: id }, { $pull: { followers: _id } }, options)
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch(next);
       })
       .catch(next);
   }

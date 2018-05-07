@@ -20,6 +20,7 @@ const companySchema = new Schema({
   messages: [Msg.schema],
   send: [Msg.schema],
   influencersFavs: [Schema.Types.ObjectId],
+  followers: [Schema.Types.ObjectId],
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });
