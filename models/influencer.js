@@ -35,6 +35,8 @@ const influencerSchema = new Schema({
   messages: [Msg.schema],
   send: [Msg.schema],
   campaignsFavs: [Schema.Types.ObjectId],
+  companiesFavs: [Schema.Types.ObjectId],
+  followers: [Schema.Types.ObjectId],
   instagram: {
     username: String,
     biography: String,
