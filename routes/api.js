@@ -171,7 +171,7 @@ router.get('/campaigns/:company', (req, res, next) => {
       Campaign.find({ company_id: company.id })
         .populate('company_id')
         .populate('influencer_id')
-        .sort({ updated_at: -1 })
+        .sort({ created_at: -1 })
         .then(campaigns => res.status(200).json(campaigns))
         .catch(next);
     })
@@ -290,6 +290,14 @@ router.put('/update-user', (req, res, next) => {
   }
 });
 
+router.post('campaigns/save-cofluencers', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  console.log('entraaaaaaa!!!!!!');
+  console.log(req.body);
+});
+
 router.get('/campaigns/edit/:id', (req, res, next) => {
   console.log('entra en la api: ', req.params.id);
   if (!req.session.currentUser) {
@@ -331,7 +339,6 @@ router.put('/:campaignid/update-campaign', (req, res, next) => {
 
 /* CREATE a new Campaign */
 router.post('/newCampaign', upload.single('file'), (req, res, next) => {
-  console.log('entra en la api');
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
@@ -343,15 +350,12 @@ router.post('/newCampaign', upload.single('file'), (req, res, next) => {
     title: req.body.title,
     campaignImage: `http://localhost:3000/uploads/${req.file.filename}`,
     description: req.body.description,
-    tags: req.body.tags,
+    tags: JSON.parse(req.body.tags),
   });
-
-  console.log('campaña nueva ', newCampaign);
 
   return newCampaign.save()
     .then(() => {
       res.json(newCampaign);
-      console.log(newCampaign);
     })
     .catch(next);
 });
