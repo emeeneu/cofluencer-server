@@ -178,16 +178,18 @@ router.get('/campaigns/:company', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/upload-image/:image', upload.single('file'), (req, res, next) => {
+router.post('/upload-image/:image/:campaignid', upload.single('file'), (req, res, next) => {
   /* eslint-disable */
   const image = req.params.image;
   const userId = req.session.currentUser._id;
+  const campaignId = req.params.campaignid;
+
   /* eslint-enable */
   const options = {
     new: true,
   };
 
-  if (image === ':coverImage') {
+  if (image === 'coverImage') {
     const updateImage = {
       coverImage: `http://localhost:3000/uploads/${req.file.filename}`,
     };
@@ -206,7 +208,7 @@ router.post('/upload-image/:image', upload.single('file'), (req, res, next) => {
         })
         .catch(next);
     }
-  } else if (image === ':profileImage') {
+  } else if (image === 'profileImage') {
     const updateImage = {
       profileImage: `http://localhost:3000/uploads/${req.file.filename}`,
     };
@@ -225,6 +227,16 @@ router.post('/upload-image/:image', upload.single('file'), (req, res, next) => {
         })
         .catch(next);
     }
+  } else if (image === 'campaignImage') {
+    const updateImage = {
+      campaignImage: `http://localhost:3000/uploads/${req.file.filename}`,
+    };
+    Campaign.findByIdAndUpdate(campaignId, updateImage, options)
+      .then((updatedCampaign) => {
+        console.log(updatedCampaign);
+        res.status(200).json(updatedCampaign);
+      })
+      .catch(next);
   }
 });
 
@@ -276,6 +288,20 @@ router.put('/update-user', (req, res, next) => {
       })
       .catch(next);
   }
+});
+
+router.get('/campaigns/edit/:id', (req, res, next) => {
+  console.log('entra en la api: ', req.params.id);
+  if (!req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  Campaign.findById(req.params.id)
+    .then((campaign) => {
+      console.log(campaign);
+      res.status(200).json(campaign);
+    })
+    .catch(next);
 });
 
 router.put('/:campaignid/update-campaign', (req, res, next) => {
@@ -343,16 +369,6 @@ router.delete('/:campaignid/delete-campaign', (req, res, next) => {
 
   Campaign.findByIdAndRemove(campaignId)
     .then(deletedCampaign => res.status(200).json(deletedCampaign))
-    .catch(next);
-});
-
-router.get('/campaigns/:id', (req, res, next) => {
-  if (!req.session.currentUser) {
-    return res.status(401).json({ error: 'unauthorized' });
-  }
-
-  Campaign.findById(req.params.id)
-    .then(campaign => res.status(200).json(campaign))
     .catch(next);
 });
 
