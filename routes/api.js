@@ -359,6 +359,8 @@ router.post('/newCampaign', upload.single('file'), (req, res, next) => {
     title: req.body.title,
     campaignImage: `http://localhost:3000/uploads/${req.file.filename}`,
     description: req.body.description,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
     tags: JSON.parse(req.body.tags),
   });
 
