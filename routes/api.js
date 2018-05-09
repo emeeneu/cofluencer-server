@@ -233,7 +233,6 @@ router.post('/upload-image/:image/:campaignid', upload.single('file'), (req, res
     };
     Campaign.findByIdAndUpdate(campaignId, updateImage, options)
       .then((updatedCampaign) => {
-        console.log(updatedCampaign);
         res.status(200).json(updatedCampaign);
       })
       .catch(next);
@@ -290,12 +289,22 @@ router.put('/update-user', (req, res, next) => {
   }
 });
 
-router.post('campaigns/save-cofluencers', (req, res, next) => {
+router.put('/campaigns/save-cofluencers', (req, res, next) => {
   if (!req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
-  console.log('entraaaaaaa!!!!!!');
-  console.log(req.body);
+
+  const options = {
+    new: true,
+  };
+
+  const { cofluencerId, campaignId } = req.body;
+
+  Campaign.findByIdAndUpdate(campaignId, { $push: { cofluencersSelected: cofluencerId } }, options)
+    .then((updatedCampaign) => {
+      res.status(200).json(updatedCampaign);
+    })
+    .catch(next);
 });
 
 router.get('/campaigns/edit/:id', (req, res, next) => {

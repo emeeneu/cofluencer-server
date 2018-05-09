@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const campaignSchema = new Schema({
   company_id: { type: Schema.Types.ObjectId, ref: 'Company' },
   influencer_id: [{ type: Schema.Types.ObjectId, ref: 'Influencer' }],
-  influencersSelected: [{ type: Schema.Types.ObjectId, ref: 'Selecteds' }],
+  cofluencersSelected: [{ type: Schema.Types.ObjectId }],
   title: String,
   description: String,
   campaignImage: String,
