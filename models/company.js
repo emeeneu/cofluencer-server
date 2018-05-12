@@ -2,22 +2,25 @@ const mongoose = require('mongoose');
 /* eslint-disable */
 const Schema = mongoose.Schema;
 /* eslint-enable */
+const Msg = require('./msg');
 
 const companySchema = new Schema({
   username: String,
+  brandName: String,
+  role: { type: String, default: 'company' },
   email: String,
   password: String,
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zip: Number,
-  },
+  city: String,
   bio: String,
   profileImage: String,
+  coverImage: String,
   socialLinks: [{}],
   tags: [],
+  no_read: { type: Number, default: 0 },
+  messages: [Msg.schema],
+  send: [Msg.schema],
   influencersFavs: [Schema.Types.ObjectId],
+  followers: [Schema.Types.ObjectId],
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });

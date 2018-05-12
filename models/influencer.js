@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 /* eslint-enable */
 const IgMedia = require('./ig-media');
+const Msg = require('./msg');
 
 const influencerSchema = new Schema({
   username: String,
-  name: String,
+  role: { type: String, default: 'influencer' },
+  name: { type: String, default: 'New Cofluencer' },
   lastname: String,
   email: String,
   facebookID: String,
@@ -21,14 +23,20 @@ const influencerSchema = new Schema({
   bio: String,
   influenceArea: String,
   profileImage: String,
+  coverImage: String,
   socialLinks: {
     facebook: String,
     instagram: String,
-    twitter: String,
-    youtube: String,
+    twitter: { type: String, default: null },
+    youtube: { type: String, default: null },
   },
   tags: [],
+  no_read: { type: Number, default: 0 },
+  messages: [Msg.schema],
+  send: [Msg.schema],
   campaignsFavs: [Schema.Types.ObjectId],
+  companiesFavs: [Schema.Types.ObjectId],
+  followers: [Schema.Types.ObjectId],
   instagram: {
     username: String,
     biography: String,

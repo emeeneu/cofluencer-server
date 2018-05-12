@@ -17,18 +17,18 @@ router.get('/me', (req, res, next) => {
   }
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login/company', (req, res, next) => {
   if (req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
-  Company.findOne({ username })
+  Company.findOne({ email })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ error: 'not-found' });
@@ -42,14 +42,39 @@ router.post('/login', (req, res, next) => {
     .catch(next);
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/login/influencer', (req, res, next) => {
   if (req.session.currentUser) {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!username || !password) {
+  if (!email || !password) {
+    return res.status(422).json({ error: 'validation' });
+  }
+
+  Influencer.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: 'not-found' });
+      }
+      if (bcrypt.compareSync(password, user.password)) {
+        req.session.currentUser = user;
+        return res.json(user);
+      }
+      return res.status(404).json({ error: 'not-found' });
+    })
+    .catch(next);
+});
+
+router.post('/brand/signup', (req, res, next) => {
+  if (req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
     return res.status(422).json({ error: 'validation' });
   }
 
@@ -64,18 +89,42 @@ router.post('/signup', (req, res, next) => {
 
       const newUser = Company({
         username,
-        email: '',
+        email,
         password: hashPass,
-        address: {
-          street: '',
-          city: '',
-          state: '',
-          zip: '',
-        },
-        bio: '',
-        profileImage: '',
-        socialLinks: [{}],
-        tags: [],
+      });
+
+      return newUser.save().then(() => {
+        req.session.currentUser = newUser;
+        res.json(newUser);
+      });
+    })
+    .catch(next);
+});
+
+router.post('/influencer/signup', (req, res, next) => {
+  if (req.session.currentUser) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
+  const { username, email, password } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(422).res.json({ error: 'unauthorized' });
+  }
+
+  Influencer.findOne({ username }, 'username')
+    .then((userExists) => {
+      if (userExists) {
+        return res.status(422).json({ error: 'username-not-unique' });
+      }
+
+      const salt = bcrypt.genSaltSync(10);
+      const hashPass = bcrypt.hashSync(password, salt);
+
+      const newUser = Influencer({
+        username,
+        email,
+        password: hashPass,
       });
 
       return newUser.save().then(() => {

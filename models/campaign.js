@@ -6,9 +6,12 @@ const Schema = mongoose.Schema;
 const campaignSchema = new Schema({
   company_id: { type: Schema.Types.ObjectId, ref: 'Company' },
   influencer_id: [{ type: Schema.Types.ObjectId, ref: 'Influencer' }],
+  cofluencersSelected: [{ type: Schema.Types.ObjectId }],
   title: String,
   description: String,
-  expirationDate: Date,
+  campaignImage: String,
+  startDate: Date,
+  endDate: Date,
   tags: [],
   location: {
     street: String,
