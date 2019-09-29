@@ -4,7 +4,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const cors = require('cors');
+const cors = require('cors');
 const session = require('express-session');
 
 const api = require('./routes/api');
@@ -28,20 +28,20 @@ const app = express();
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
-// const corsOptions = { origin: 'http://localhost:4200' };
+const corsOptions = { origin: 'https://cofluencer.netlify.com' };
 
-// app.use(cors(corsOptions));
-// app.options('http://localhost:4200', cors);
+app.use(cors(corsOptions));
+app.options('https://cofluencer.netlify.com', cors);
 // uncomment after placing your favicon in /public
-app.use((req, res, next) => {
+// app.use((req, res, next) => {
   // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.setHeader('Access-Control-Allow-Origin', 'https://cofluencer.netlify.com');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,OPTIONS,DELETE');
-  res.setHeader('Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  // res.setHeader('Access-Control-Allow-Origin', 'https://cofluencer.netlify.com');
+  // res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,OPTIONS,DELETE');
+  // res.setHeader('Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization');
+  // res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   // res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+  // next();
+// });
 
 app.use(session({
   secret: 'angular auth passport secret shh',
