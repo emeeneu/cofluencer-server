@@ -3,7 +3,7 @@ const path = require('path');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors')({origin: true, credentials: true });
 const session = require('express-session');
 
 const api = require('./routes/api');
@@ -32,7 +32,11 @@ app.use(session({
   secret: 'cofluencer-api',
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 2419200000, sameSite: 'none', secure: process.env.NODE_ENV === 'production' },
+  cookie: { 
+    maxAge: 2419200000, 
+    sameSite: 'none', 
+    secure: process.env.NODE_ENV === 'production'
+  },
 }));
 app.use(logger('dev'));
 app.use(bodyParser.json());
