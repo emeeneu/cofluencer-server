@@ -11,7 +11,6 @@ const auth = require('./routes/auth');
 
 require('dotenv').config();
 
-
 if (process.env.NODE_ENV === 'development') {
   mongoose.connect(process.env.DATABASE);
 } else {
@@ -21,7 +20,6 @@ if (process.env.NODE_ENV === 'development') {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log(`Connected to ${process.env.DATABASE} database`));
-
 const app = express();
 
 app.set('trust proxy', true);
@@ -41,7 +39,6 @@ app.use(session({
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', auth);
