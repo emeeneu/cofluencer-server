@@ -31,18 +31,27 @@ app.options('*', cors);
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'ejs');
-// const corsOptions = { origin: 'http://localhost:4200' };
+// const corsOptions = { origin: 'https://cofluencer.netlify.com' };
 
 // app.use(cors(corsOptions));
-// app.options('http://localhost:4200', cors);
+// app.options('https://cofluencer.netlify.com', cors);
 // uncomment after placing your favicon in /public
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+  // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+  res.setHeader('Access-Control-Allow-Origin', 'https://cofluencer.netlify.com');
   res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,OPTIONS,DELETE');
+  // res.setHeader('Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Credentials', false);
   next();
 });
+
+// app.use(
+//  cors({
+//    credentials: true,
+//    origin: ['https://cofluencer.netlify.com', 'https://elite-app.netlify.com'],
+//  }),
+// );
 
 app.use(session({
   secret: 'cofluencer-api',
